@@ -13,11 +13,13 @@ namespace eCommerceAPI.Persistence.Contexts
     {
         public ECommerceAPIDbContext(DbContextOptions options) : base(options)
         {
+
         }
 
-        public DbSet<Order> Orders { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Customer> Customers { get; set; }
+
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

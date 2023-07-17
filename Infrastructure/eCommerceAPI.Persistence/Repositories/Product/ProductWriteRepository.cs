@@ -1,6 +1,6 @@
 ﻿using eCommerceAPI.Application.Repositories;
-using eCommerceAPI.Domain.Entities;
 using eCommerceAPI.Persistence.Contexts;
+using eCommerceAPI.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
