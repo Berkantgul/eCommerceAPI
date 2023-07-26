@@ -1,5 +1,9 @@
 using eCommerceAPI.Application.Validators.Products;
+using eCommerceAPI.Infrastructure;
 using eCommerceAPI.Infrastructure.Filters;
+using eCommerceAPI.Infrastructure.Services.Storage;
+using eCommerceAPI.Infrastructure.Services.Storage.Azure;
+using eCommerceAPI.Infrastructure.Services.Storage.Local;
 using eCommerceAPI.Persistence;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -7,6 +11,8 @@ using FluentValidation.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPersistenceService();
+builder.Services.AddInfrastructureService();
+builder.Services.AddStorage<AzureStorage>();
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
@@ -32,6 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
