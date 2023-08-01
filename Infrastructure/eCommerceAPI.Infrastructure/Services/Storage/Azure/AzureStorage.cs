@@ -44,7 +44,7 @@ namespace eCommerceAPI.Infrastructure.Services.Storage.Azure
             await _blobContainerClient.CreateIfNotExistsAsync();
 
             // İzin verme işlemi gerçekleştirilecek.
-            await _blobContainerClient.SetAccessPolicyAsync(PublicAccessType.None);
+            await _blobContainerClient.SetAccessPolicyAsync(PublicAccessType.BlobContainer);
 
             // Geriye veri döndüreceğim için bir tuple nesnesine ihtiyacım var.
             List<(string fileName, string pathOrContainerName)> datas = new();
