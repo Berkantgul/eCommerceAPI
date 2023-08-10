@@ -1,4 +1,5 @@
-﻿using eCommerceAPI.Application.Exceptions;
+﻿using T = eCommerceAPI.Application.DTOs;
+using eCommerceAPI.Application.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using F = eCommerceAPI.Domain.Entities.Identity;
+using eCommerceAPI.Application.Abstractions.Token;
 
 namespace eCommerceAPI.Application.Features.Commands.AppUser.LoginUser
 {
@@ -14,11 +16,13 @@ namespace eCommerceAPI.Application.Features.Commands.AppUser.LoginUser
     {
         readonly UserManager<F::AppUser> _userManager;
         readonly SignInManager<F::AppUser> _signInManager;
+        readonly ITokenHandler _tokenHandler;
 
-        public LoginUserCommandHandler(UserManager<F.AppUser> userManager, SignInManager<F.AppUser> signInManager)
+        public LoginUserCommandHandler(UserManager<F.AppUser> userManager, SignInManager<F.AppUser> signInManager, ITokenHandler tokenHandler)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
@@ -34,8 +38,14 @@ namespace eCommerceAPI.Application.Features.Commands.AppUser.LoginUser
             if (result.Succeeded)
             {
                 // Yetkilendirme 
+                T::Token token = _tokenHandler.CreateToken(5);
+                return new LoginUserCommandSuccessResponse()
+                {
+                    Token = token
+                };
             }
-            return null;
+            else
+                throw new NotFailLoginException();
         }
     }
 }
