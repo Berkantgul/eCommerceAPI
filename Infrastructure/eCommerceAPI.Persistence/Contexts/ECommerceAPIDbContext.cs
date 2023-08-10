@@ -1,5 +1,7 @@
 ﻿using eCommerceAPI.Domain.Entities;
 using eCommerceAPI.Domain.Entities.Common;
+using eCommerceAPI.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace eCommerceAPI.Persistence.Contexts
 {
-    public class ECommerceAPIDbContext : DbContext
+    public class ECommerceAPIDbContext : IdentityDbContext<AppUser, AppRole, string>
     {
         public ECommerceAPIDbContext(DbContextOptions options) : base(options)
         {
