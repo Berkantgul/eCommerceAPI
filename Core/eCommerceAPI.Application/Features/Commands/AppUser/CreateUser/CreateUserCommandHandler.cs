@@ -5,37 +5,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using eCommerceAPI.Application.Abstractions.Services;
+using eCommerceAPI.Application.DTOs.User;
 
 namespace eCommerceAPI.Application.Features.Commands.AppUser.CreateUser
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
     {
 
-        private readonly UserManager<Domain.Entities.Identity.AppUser> _userManager;
+        private IUserService _userService;
 
-        public CreateUserCommandHandler(UserManager<Domain.Entities.Identity.AppUser> userManager)
+        public CreateUserCommandHandler(IUserService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
         {
-            IdentityResult result = await _userManager.CreateAsync(new()
+            // Burada sadece ilgili fonksiyonu çağırmam gerekiyor. Harici teknik detaylara inmemem gerekiyor.
+            CreateUserResponse response= await _userService.CreateAsync(new()
             {
-                Id = Guid.NewGuid().ToString(),
+                Email = request.Email,
                 NameSurname = request.NameSurname,
                 UserName = request.UserName,
-                Email = request.Email,
-            }, request.Password);
+                CheckPassword = request.CheckPassword,
+                Password = request.Password
+            });
 
-            CreateUserCommandResponse response = new() { Succceded = result.Succeeded };
-            if (result.Succeeded)
-                response.Message = "Kullanıcı kaydı başarılı bir şekilde oluşturulmuştur.";
-            else
-                foreach (var error in result.Errors)
-                    response.Message += $"{error.Code} - {error.Description}";
-
-            return response;
+            return new()
+            {
+                Message = response.Message,
+                Succceded = response.Succceded
+            };
         }
     }
 }
