@@ -19,6 +19,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using F = eCommerceAPI.Domain.Entities.Identity;
 using static Google.Apis.Auth.GoogleJsonWebSignature;
+using Microsoft.EntityFrameworkCore;
 
 namespace eCommerceAPI.Persistence.Services
 {
@@ -29,14 +30,16 @@ namespace eCommerceAPI.Persistence.Services
         private readonly ITokenHandler _tokenHandler;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<F::AppUser> _signInManager;
+        private readonly IUserService _userService;
 
-        public AuthService(IHttpClientFactory httpClientFactory, UserManager<AppUser> userManager, ITokenHandler tokenHandler, IConfiguration configuration,SignInManager<AppUser> signInManager)
+        public AuthService(IHttpClientFactory httpClientFactory, UserManager<AppUser> userManager, ITokenHandler tokenHandler, IConfiguration configuration, SignInManager<AppUser> signInManager, IUserService userService)
         {
             _httpClient = httpClientFactory.CreateClient();
             _userManager = userManager;
             _tokenHandler = tokenHandler;
             _configuration = configuration;
             _signInManager = signInManager;
+            _userService = userService;
         }
 
         async Task<Token> CreateExternalUserAsync(AppUser appUser, string email, string name, UserLoginInfo info, int accessTokenLifeTime)
@@ -62,7 +65,7 @@ namespace eCommerceAPI.Persistence.Services
             {
                 await _userManager.AddLoginAsync(appUser, info);
                 Token token = _tokenHandler.CreateToken(5);
-
+                await _userService.UpdateRefreshToken(token.RefreshToken, appUser, token.Expiration, 5);
                 return token;
 
             }
@@ -110,7 +113,7 @@ namespace eCommerceAPI.Persistence.Services
 
         }
 
-        public async Task<Token> LoginAsync(string userNameOrEmail, string password,int accessTokenLifeTime)
+        public async Task<Token> LoginAsync(string userNameOrEmail, string password, int accessTokenLifeTime)
         {
             F::AppUser user = await _userManager.FindByNameAsync(userNameOrEmail);
             if (user == null)
@@ -124,11 +127,27 @@ namespace eCommerceAPI.Persistence.Services
             {
                 // Yetkilendirme 
                 Token token = _tokenHandler.CreateToken(accessTokenLifeTime);
+                // Refresh Token
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 5);
                 return token;
 
             }
             else
                 throw new NotFailLoginException();
+        }
+
+        public async Task<Token> RefreshTokenLoginAsync(string refreshToken)
+        {
+            AppUser? user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            if (user != null && user?.RefreshTokenEndDate > DateTime.UtcNow)
+            {
+                Token token = _tokenHandler.CreateToken(15);
+                await _userService.UpdateRefreshToken(token.RefreshToken,user,token.Expiration, 15);
+                return token;
+            }
+            else
+                throw new NotFoundUserException();
+
         }
     }
 }

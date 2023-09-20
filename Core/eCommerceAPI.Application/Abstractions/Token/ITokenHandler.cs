@@ -10,5 +10,6 @@ namespace eCommerceAPI.Application.Abstractions.Token
     public interface ITokenHandler
     {
         T::Token CreateToken(int seconds);
+        string CreateRefreshToken();
     }
 }

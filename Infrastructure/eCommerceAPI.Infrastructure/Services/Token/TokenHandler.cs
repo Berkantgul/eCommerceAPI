@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace eCommerceAPI.Infrastructure.Services.Token
             _configuration = configuration;
         }
 
+
         public Application.DTOs.Token CreateToken(int seconds)
         {
             //DTOs içeriisndeki token nesnemi bağlıyorum.
@@ -31,7 +33,7 @@ namespace eCommerceAPI.Infrastructure.Services.Token
             SigningCredentials signingCredentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
             // Oluşturulacak token ayarlarını tanımlıyorum
-            token.Expiration = DateTime.UtcNow.AddDays(seconds);
+            token.Expiration = DateTime.UtcNow.AddSeconds(seconds);
             JwtSecurityToken securityToken = new(
                     audience: _configuration["Token:Audience"],
                     issuer: _configuration["Token:Issuer"],
@@ -42,7 +44,19 @@ namespace eCommerceAPI.Infrastructure.Services.Token
             // Token oluşturucu sınıfından bir örnek alıyorum
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             token.AccessToken = tokenHandler.WriteToken(securityToken);
+
+            // Create Refresh Token
+            token.RefreshToken = CreateRefreshToken();
             return token;
+        }
+       
+        public string CreateRefreshToken()
+        {
+            byte[] number = new byte[32];
+            using RandomNumberGenerator random = RandomNumberGenerator.Create();
+            random.GetBytes(number);
+            return Convert.ToBase64String(number);
+            // CreateAccessToken fonksiyonu tetiklendiğinde çağırmak istiyorum
         }
     }
 }
