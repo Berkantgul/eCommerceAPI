@@ -1,4 +1,5 @@
-﻿using System;
+﻿using eCommerceAPI.Domain.Entities.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace eCommerceAPI.Application.Abstractions.Token
 {
     public interface ITokenHandler
     {
-        T::Token CreateToken(int seconds);
+        T::Token CreateToken(int seconds,AppUser user);
         string CreateRefreshToken();
     }
 }

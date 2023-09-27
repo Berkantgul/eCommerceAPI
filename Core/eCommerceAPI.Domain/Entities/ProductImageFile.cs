@@ -8,6 +8,7 @@ namespace eCommerceAPI.Domain.Entities
 {
     public class ProductImageFile : eCommerceAPI.Domain.Entities.File
     {
+        public bool Showcase { get; set; }
         public ICollection<Product> Products { get; set; }
     }
 }

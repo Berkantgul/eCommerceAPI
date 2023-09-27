@@ -1,10 +1,12 @@
 ﻿using eCommerceAPI.Application.Abstractions.Token;
+using eCommerceAPI.Domain.Entities.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +23,7 @@ namespace eCommerceAPI.Infrastructure.Services.Token
         }
 
 
-        public Application.DTOs.Token CreateToken(int seconds)
+        public Application.DTOs.Token CreateToken(int seconds, AppUser user)
         {
             //DTOs içeriisndeki token nesnemi bağlıyorum.
             Application.DTOs.Token token = new();
@@ -39,7 +41,8 @@ namespace eCommerceAPI.Infrastructure.Services.Token
                     issuer: _configuration["Token:Issuer"],
                     expires: token.Expiration,
                     notBefore: DateTime.UtcNow,
-                    signingCredentials: signingCredentials
+                    signingCredentials: signingCredentials,
+                    claims: new List<Claim> { new(ClaimTypes.Name, user.UserName) }
                 );
             // Token oluşturucu sınıfından bir örnek alıyorum
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
@@ -49,7 +52,7 @@ namespace eCommerceAPI.Infrastructure.Services.Token
             token.RefreshToken = CreateRefreshToken();
             return token;
         }
-       
+
         public string CreateRefreshToken()
         {
             byte[] number = new byte[32];

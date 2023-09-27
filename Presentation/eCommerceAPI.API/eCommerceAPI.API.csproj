@@ -11,6 +11,10 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+    <PackageReference Include="Serilog" Version="3.0.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.3.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
@@ -18,6 +22,7 @@
     <ProjectReference Include="..\..\Core\eCommerceAPI.Application\eCommerceAPI.Application.csproj" />
     <ProjectReference Include="..\..\Infrastructure\eCommerceAPI.Infrastructure\eCommerceAPI.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Infrastructure\eCommerceAPI.Persistence\eCommerceAPI.Persistence.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\eCommerceAPI.SignalR\eCommerceAPI.SignalR.csproj" />
   </ItemGroup>
 
   <ItemGroup>
