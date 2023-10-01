@@ -23,6 +23,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddPersistenceService();
 builder.Services.AddInfrastructureService();
 builder.Services.AddStorage<AzureStorage>();
