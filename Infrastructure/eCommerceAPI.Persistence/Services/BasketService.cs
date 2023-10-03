@@ -24,6 +24,7 @@ namespace eCommerceAPI.Persistence.Services
         readonly IBasketItemReadRepository _basketItemReadRepository;
         readonly IBasketReadRepository _basketReadRepository;
 
+
         public BasketService(IHttpContextAccessor httpContextAccessor, UserManager<AppUser> userManager, IOrderReadRepository orderReadRepository, IBasketWriteRepository basketWriteRepository, IBasketItemWriteRepository basketItemWriteRepository, IBasketItemReadRepository basketItemReadRepository, IBasketReadRepository basketReadRepository)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -120,6 +121,14 @@ namespace eCommerceAPI.Persistence.Services
             {
                 _basketItem.Quantity = basketItem.Quantity;
                 await _basketItemWriteRepository.SaveAsync();
+            }
+        }
+        public Basket? GetUserActiveBasket
+        {
+            get
+            {
+                Basket? basket = ContextUser().Result;
+                return basket;
             }
         }
     }
